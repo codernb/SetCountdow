@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.codernb.setcountdown"
         //15
-        minSdkVersion 1
+        minSdkVersion 5
         targetSdkVersion 18
         versionCode 1
         versionName "1.0"

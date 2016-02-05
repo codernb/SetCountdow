@@ -1,8 +1,13 @@
 package com.codernb.setcountdown;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,13 +19,18 @@ import android.widget.TextView;
  */
 public class MainActivity extends ActionBarActivity {
 
-    public static final int TIME = 12;
+    public static final int TIME = 60;
     public static final int THRESHOLD = 10;
     public static final int DELAY = 50;
 
     private static final Countdown COUNTDOWN = Countdown.getInstance();
 
-    private final Handler handler = new Handler();
+    private static final Handler HANDLER = new Handler();
+    private Vibrator vibrator;
+    private static final long[] THRESHOLD_VIBRATE_PATTERN = {0, 500, 200, 500};
+    private boolean thresholdReached;
+
+    private static final ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 80);
 
     private TextView clockView;
     private TextView setsView;
@@ -32,13 +42,18 @@ public class MainActivity extends ActionBarActivity {
         public void run() {
             if (!COUNTDOWN.isRunning()) {
                 stopCountdown();
+                toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 500);
+                vibrator.vibrate(1000);
                 return;
             }
-            if (COUNTDOWN.isInThreshold()) {
+            if (!thresholdReached && COUNTDOWN.isInThreshold()) {
                 clockView.getRootView().setBackgroundColor(Color.RED);
+                toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 1000);
+                vibrator.vibrate(THRESHOLD_VIBRATE_PATTERN, -1);
+                thresholdReached = true;
             }
             refreshViews();
-            handler.postDelayed(this, DELAY);
+            HANDLER.postDelayed(this, DELAY);
         }
     };
 
@@ -71,6 +86,7 @@ public class MainActivity extends ActionBarActivity {
         setStartButtonListener();
         setResetListener();
         startHandler();
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     private void getWidgeds() {
@@ -82,16 +98,17 @@ public class MainActivity extends ActionBarActivity {
 
     private void startHandler() {
         if (COUNTDOWN.isRunning())
-            handler.postDelayed(countdown, 0);
+            HANDLER.postDelayed(countdown, 0);
     }
 
     private void stopHandler() {
-        handler.removeCallbacks(countdown);
+        HANDLER.removeCallbacks(countdown);
     }
 
     private void startCountdown() {
         COUNTDOWN.setCountdownTime(TIME);
         COUNTDOWN.setThreshold(THRESHOLD);
+        thresholdReached = false;
         COUNTDOWN.start();
         setStopListener();
         startHandler();
