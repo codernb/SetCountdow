@@ -4,4 +4,10 @@
     <string name="start_countdown">Start</string>
     <string name="stop_countdown">Stop</string>
     <string name="reset_sets">Reset</string>
+    <string name="clock">Clock</string>
+    <string name="sets">Sets</string>
+    <string name="set_time_hint">Countdown Time</string>
+    <string name="set_threshold_hint">Threshold Time</string>
+    <string name="default_countdown_time">60</string>
+    <string name="default_threshold_time">10</string>
 </resources>

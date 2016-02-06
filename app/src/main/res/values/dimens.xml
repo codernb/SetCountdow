@@ -4,4 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="margin_left_right">40dp</dimen>
     <dimen name="margin_top_bottom">30dp</dimen>
+    <dimen name="clock_size">50sp</dimen>
+    <dimen name="sets_size">30sp</dimen>
+    <dimen name="clock_set_size">18sp</dimen>
 </resources>

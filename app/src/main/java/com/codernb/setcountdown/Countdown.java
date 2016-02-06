@@ -49,6 +49,8 @@ public class Countdown {
     }
 
     public boolean isInThreshold() {
+        if (!isRunning())
+            return false;
         return getTime() <= getThreshold();
     }
 
