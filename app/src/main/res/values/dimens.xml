@@ -7,4 +7,16 @@
     <dimen name="clock_size">50sp</dimen>
     <dimen name="sets_size">30sp</dimen>
     <dimen name="clock_set_size">18sp</dimen>
+    <integer name="countdown_end_tone_duration">500</integer>
+    <integer name="countdown_end_vibration_duration">1000</integer>
+    <integer name="threshold_reached_tone_duration">1000</integer>
+    <integer name="threshold_reached_vibration_repeat">-1</integer>
+    <integer name="clock_refresh_delay">50</integer>
+    <integer name="volume">80</integer>
+    <array name="threshold_reached_vibration_pattern">
+        <item>0</item>
+        <item>500</item>
+        <item>200</item>
+        <item>500</item>
+    </array>
 </resources>
