@@ -22,10 +22,18 @@ public class Preferences {
         editor.commit();
     }
 
+    public static int load(Activity activity, int id) {
+        return load(activity, activity.getResources(), id, 0);
+    }
+
     public static int load(Activity activity, int id, int defaultValueId) {
         Resources resources = activity.getResources();
+        return load(activity, resources, id, resources.getInteger(defaultValueId));
+    }
+
+    private static int load(Activity activity, Resources resources, int id, int defaultValue) {
         SharedPreferences sharedPreferences = getSharedPreferencesFrom(activity);
-        return sharedPreferences.getInt(resources.getString(id), resources.getInteger(defaultValueId));
+        return sharedPreferences.getInt(resources.getString(id), defaultValue);
     }
 
     private static Editor getEditorFrom(Activity activity) {

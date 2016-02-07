@@ -60,7 +60,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="74" column="0" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
+              <caret line="106" column="52" selection-start-line="106" selection-start-column="48" selection-end-line="106" selection-end-column="52" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1720#1844#0" expanded="true" />
@@ -94,19 +94,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Countdown.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Countdown.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/Countdown.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
+            <state vertical-scroll-proportion="0.45454547">
+              <caret line="75" column="65" selection-start-line="75" selection-start-column="65" selection-end-line="75" selection-end-column="65" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#372#373#0" expanded="true" />
-                <element signature="e#388#389#0" expanded="true" />
-                <element signature="e#717#749#0" expanded="true" />
-                <element signature="e#767#799#0" expanded="true" />
-                <element signature="e#873#904#0" expanded="true" />
-                <element signature="e#922#954#0" expanded="true" />
+                <element signature="e#778#810#0" expanded="true" />
+                <element signature="e#828#860#0" expanded="true" />
+                <element signature="e#934#965#0" expanded="true" />
+                <element signature="e#983#1015#0" expanded="true" />
+                <element signature="e#1060#1082#0" expanded="true" />
+                <element signature="e#1737#1738#0" expanded="true" />
+                <element signature="e#1802#1803#0" expanded="true" />
+                <element signature="e#1882#1904#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -128,11 +130,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Preferences.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="dimens.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/values/dimens.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="14" column="16" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="strings.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-9.310345">
+              <caret line="18" column="37" selection-start-line="18" selection-start-column="37" selection-end-line="18" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Preferences.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/Preferences.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.29126215">
-              <caret line="14" column="9" selection-start-line="14" selection-start-column="9" selection-end-line="14" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="30" column="40" selection-start-line="30" selection-start-column="40" selection-end-line="30" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#321#322#0" expanded="true" />
@@ -1679,12 +1701,12 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/ClockPopUp.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/clock_popup.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/Preferences.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/dimens.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/Countdown.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/ClockPopup.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/Preferences.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/Countdown.java" />
       </list>
     </option>
   </component>
@@ -2045,7 +2067,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1600" y="185" width="1920" height="1062" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -2053,11 +2075,11 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20021299" sideWeight="0.6846318" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26517573" sideWeight="0.6846318" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.399361" sideWeight="0.48932764" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20021299" sideWeight="0.3153682" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26517573" sideWeight="0.3153682" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -2068,7 +2090,7 @@
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24919957" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21771611" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21771611" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24813631" sideWeight="0.47438633" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -2576,26 +2598,52 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/dimens.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.275862">
-          <caret line="16" column="28" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="16" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/dimens.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.29829547">
-          <caret line="14" column="16" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
+        <state vertical-scroll-proportion="-9.310345">
+          <caret line="18" column="37" selection-start-line="18" selection-start-column="37" selection-end-line="18" selection-end-column="37" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/ClockPopup.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="38" selection-start-line="16" selection-start-column="38" selection-end-line="16" selection-end-column="38" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#884#904#0" expanded="true" />
+            <element signature="e#1166#1190#0" expanded="true" />
+            <element signature="e#2494#2526#0" expanded="true" />
+            <element signature="e#2578#2605#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/Preferences.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="30" column="40" selection-start-line="30" selection-start-column="40" selection-end-line="30" selection-end-column="40" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#321#322#0" expanded="true" />
+            <element signature="e#337#338#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="74" column="0" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
+          <caret line="106" column="52" selection-start-line="106" selection-start-column="48" selection-end-line="106" selection-end-column="52" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1720#1844#0" expanded="true" />
@@ -2630,42 +2678,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/Countdown.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
+        <state vertical-scroll-proportion="0.45454547">
+          <caret line="75" column="65" selection-start-line="75" selection-start-column="65" selection-end-line="75" selection-end-column="65" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#372#373#0" expanded="true" />
-            <element signature="e#388#389#0" expanded="true" />
-            <element signature="e#717#749#0" expanded="true" />
-            <element signature="e#767#799#0" expanded="true" />
-            <element signature="e#873#904#0" expanded="true" />
-            <element signature="e#922#954#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/ClockPopup.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="38" selection-start-line="16" selection-start-column="38" selection-end-line="16" selection-end-column="38" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#884#904#0" expanded="true" />
-            <element signature="e#1166#1190#0" expanded="true" />
-            <element signature="e#2494#2526#0" expanded="true" />
-            <element signature="e#2578#2605#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/codernb/setcountdown/Preferences.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.29126215">
-          <caret line="14" column="9" selection-start-line="14" selection-start-column="9" selection-end-line="14" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#321#322#0" expanded="true" />
-            <element signature="e#337#338#0" expanded="true" />
+            <element signature="e#778#810#0" expanded="true" />
+            <element signature="e#828#860#0" expanded="true" />
+            <element signature="e#934#965#0" expanded="true" />
+            <element signature="e#983#1015#0" expanded="true" />
+            <element signature="e#1060#1082#0" expanded="true" />
+            <element signature="e#1737#1738#0" expanded="true" />
+            <element signature="e#1802#1803#0" expanded="true" />
+            <element signature="e#1882#1904#0" expanded="true" />
           </folding>
         </state>
       </provider>

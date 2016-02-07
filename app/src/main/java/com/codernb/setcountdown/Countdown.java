@@ -13,18 +13,18 @@ public class Countdown {
     private long startTime;
     private int sets;
     private boolean running;
+    private final Activity activity;
 
     private static Countdown instance;
 
-    private Countdown() {
-        ;
+    private Countdown(Activity activity) {
+        this.activity = activity;
+        load(activity);
     }
 
     public static Countdown getInstance(Activity activity) {
-        if (instance == null) {
-            instance = new Countdown();
-            instance.load(activity);
-        }
+        if (instance == null)
+            instance = new Countdown(activity);
         return instance;
     }
 
@@ -35,6 +35,7 @@ public class Countdown {
         int thresholdTime = Preferences.load(activity,
                 R.string.default_threshold_time,
                 R.integer.threshold_time_default);
+        sets = Preferences.load(activity, R.string.sets_save_key);
         setCountdownTime(countdownTime);
         setThreshold(thresholdTime);
     }
@@ -72,6 +73,7 @@ public class Countdown {
 
     public void start() {
         sets++;
+        Preferences.save(activity, R.string.sets_save_key, sets);
         startTime = System.currentTimeMillis();
         running = true;
     }

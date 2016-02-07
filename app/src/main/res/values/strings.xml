@@ -16,4 +16,5 @@
     <string name="set_plural">Sets</string>
     <string name="countdown_time_save_key">CountdownTime</string>
     <string name="threshold_save_key">ThresholdTime</string>
+    <string name="sets_save_key">Sets</string>
 </resources>
