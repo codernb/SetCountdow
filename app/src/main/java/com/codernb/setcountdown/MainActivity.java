@@ -1,6 +1,5 @@
 package com.codernb.setcountdown;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -10,12 +9,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.codernb.setcountdown.Popup.Callback;
 
 /**
  * Created by cyril on 04.02.16.
@@ -34,6 +34,7 @@ public class MainActivity extends ActionBarActivity {
     private boolean thresholdReached;
 
     private ClockPopup clockPopup;
+    private SetsPopup setsPopup;
 
     private Vibrator vibrator;
     private ToneGenerator toneGenerator;
@@ -80,6 +81,21 @@ public class MainActivity extends ActionBarActivity {
         }
     };
 
+    private final OnLongClickListener setsSetListener = new OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            setsPopup.show();
+            return true;
+        }
+    };
+
+    private final Callback popupCallback = new Callback() {
+        @Override
+        public void onOK() {
+            refreshViews();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +104,7 @@ public class MainActivity extends ActionBarActivity {
         resources = getResources();
         vibrator = getVibrator();
         clockPopup = getClockCallback();
+        setsPopup = getSetsCallback();
         initializeWidgets();
         initializeButtons();
         initializeValues();
@@ -100,6 +117,7 @@ public class MainActivity extends ActionBarActivity {
         super.onDestroy();
         stopHandler();
         clockPopup.dismiss();
+        setsPopup.dismiss();
     }
 
     private void initializeWidgets() {
@@ -113,6 +131,7 @@ public class MainActivity extends ActionBarActivity {
         updateStartListenerOn(startButton);
         setResetListenerOn(resetButton);
         setTimeSetListenerOn(clockView);
+        setSetsSetListenerOn(setsView);
     }
 
     private void initializeValues() {
@@ -193,6 +212,10 @@ public class MainActivity extends ActionBarActivity {
         view.setOnLongClickListener(timeSetListener);
     }
 
+    private void setSetsSetListenerOn(View view) {
+        view.setOnLongClickListener(setsSetListener);
+    }
+
     private void refreshViews() {
         refreshClockOn(clockView);
         refreshStartTextOn(startButton);
@@ -241,12 +264,11 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private ClockPopup getClockCallback() {
-        return new ClockPopup(this, countdown, new ClockPopup.Callback() {
-            @Override
-            public void onOK() {
-                refreshViews();
-            }
-        });
+        return new ClockPopup(this, countdown, popupCallback);
+    }
+
+    private SetsPopup getSetsCallback() {
+        return new SetsPopup(this, countdown, popupCallback);
     }
 
     private void runCountdown(Runnable runnable) {

@@ -59,6 +59,11 @@ public class Countdown {
         return sets;
     }
 
+    public void setSets(int sets) {
+        this.sets = sets;
+        Preferences.save(activity, R.string.sets_save_key, sets);
+    }
+
     public boolean isRunning() {
         if (!running)
             return false;
@@ -71,8 +76,7 @@ public class Countdown {
     }
 
     public void start() {
-        sets++;
-        Preferences.save(activity, R.string.sets_save_key, sets);
+        setSets(getSets() + 1);
         startTime = System.currentTimeMillis();
         running = true;
     }
@@ -83,8 +87,7 @@ public class Countdown {
 
     public void reset() {
         stop();
-        sets = 0;
-        Preferences.save(activity, R.string.sets_save_key, sets);
+        setSets(0);
     }
 
     public int getTime() {
