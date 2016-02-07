@@ -2,7 +2,6 @@ package com.codernb.setcountdown;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 /**
@@ -35,8 +33,11 @@ public class MainActivity extends ActionBarActivity {
     private long[] thresholdVibratePattern;
     private boolean thresholdReached;
 
+    private ClockPopup clockPopup;
+
     private Vibrator vibrator;
     private ToneGenerator toneGenerator;
+    private Resources resources;
 
     private TextView clockView;
     private TextView setsView;
@@ -77,29 +78,7 @@ public class MainActivity extends ActionBarActivity {
     private final OnLongClickListener timeSetListener = new OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
-            final View clockSetView = layoutInflater.inflate(R.layout.clock_popup, null);
-            final EditText countdownTimeView = (EditText) clockSetView.findViewById(R.id.set_countdown_time);
-            final EditText thresholdTimeView = (EditText) clockSetView.findViewById(R.id.set_threshold_time);
-            if (COUNTDOWN.getCountdownTime() > 0)
-                countdownTimeView.setText(String.format("%d", COUNTDOWN.getCountdownTime()));
-            if (COUNTDOWN.getThreshold() > 0)
-                thresholdTimeView.setText(String.format("%d", COUNTDOWN.getThreshold()));
-
-            //TODO: Refactor to own class
-            alertDialogBuilder.setView(clockSetView)
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            int countdownTime = Integer.parseInt(countdownTimeView.getText().toString());
-                            int thresholdTime = Integer.parseInt(thresholdTimeView.getText().toString());
-                            COUNTDOWN.setCountdownTime(countdownTime);
-                            COUNTDOWN.setThreshold(thresholdTime);
-                            refreshViews();
-                        }
-                    })
-                    .create()
-                    .show();
+            clockPopup.show();
             return true;
         }
     };
@@ -108,21 +87,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        resources = getResources();
+        vibrator = getVibrator();
+        clockPopup = getClockCallback();
         initializeWidgets();
         initializeButtons();
         initializeValues();
-        vibrator = getVibrator();
-
-        //TODO: Find better solution
-        if (COUNTDOWN.isInThreshold()) {
-            thresholdReached = true;
-            setBackgroundColor(Color.RED);
-        }
-
-        //TODO: Refactor to own class
-        alertDialogBuilder = new AlertDialog.Builder(this);
-        layoutInflater = LayoutInflater.from(this);
-
+        initializeThresholReached();
         startHandler();
     }
 
@@ -130,6 +101,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
         stopHandler();
+        clockPopup.dismiss();
     }
 
     private void initializeWidgets() {
@@ -146,15 +118,21 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void initializeValues() {
-        Resources resources = getResources();
         clockRefreshDelay = resources.getInteger(R.integer.clock_refresh_delay);
         countdownEndToneDuration = resources.getInteger(R.integer.countdown_end_tone_duration);
         countdownEndVibrationDuration = resources.getInteger(R.integer.countdown_end_vibration_duration);
         thresholdReachedToneDuration = resources.getInteger(R.integer.threshold_reached_tone_duration);
         thresholdReachedVibrationRepeat = resources.getInteger(R.integer.threshold_reached_vibration_repeat);
-        thresholdVibratePattern = getThresholdVibratePattern(resources);
+        thresholdVibratePattern = getThresholdVibratePattern();
         int volume = resources.getInteger(R.integer.volume);
         toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, volume);
+    }
+
+    private void initializeThresholReached() {
+        if (COUNTDOWN.isInThreshold()) {
+            thresholdReached = true;
+            setBackgroundColor(Color.RED);
+        }
     }
 
     private void startHandler() {
@@ -216,13 +194,27 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void refreshViews() {
+        refreshClockOn(clockView);
+        refreshStartTextOn(startButton);
+        refreshSetsOn(setsView);
+    }
+
+    private void refreshClockOn(TextView textView) {
         int time = COUNTDOWN.getTime();
-        int sets = COUNTDOWN.getSets();
+        textView.setText(String.format("%ds", time));
+    }
+
+    private void refreshStartTextOn(Button button) {
         int startButtonText = COUNTDOWN.isRunning() ?
                 R.string.stop_countdown : R.string.start_countdown;
-        clockView.setText(String.format("%ds", time));
-        setsView.setText(String.format("%d %s", sets, sets == 1 ? "Set" : "Sets"));
-        startButton.setText(startButtonText);
+        button.setText(startButtonText);
+    }
+
+    private void refreshSetsOn(TextView textView) {
+        int sets = COUNTDOWN.getSets();
+        textView.setText(String.format("%d %s", sets, sets == 1 ?
+                resources.getString(R.string.set_singular) :
+                resources.getString(R.string.set_plural)));
     }
 
     private void signalCountdownEnd() {
@@ -240,12 +232,21 @@ public class MainActivity extends ActionBarActivity {
         return (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
     }
 
-    private long[] getThresholdVibratePattern(Resources resources) {
+    private long[] getThresholdVibratePattern() {
         int[] ints = resources.getIntArray(R.array.threshold_reached_vibration_pattern);
         long[] thresholdVibratePattern = new long[ints.length];
         for (int i = 0; i < ints.length; i++)
             thresholdVibratePattern[i] = (long) ints[i];
         return thresholdVibratePattern;
+    }
+
+    private ClockPopup getClockCallback() {
+        return new ClockPopup(this, COUNTDOWN, new ClockPopup.Callback() {
+            @Override
+            public void onOK() {
+                refreshViews();
+            }
+        });
     }
 
     private void runCountdown(Runnable runnable) {
