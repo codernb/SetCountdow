@@ -22,7 +22,7 @@ import android.widget.TextView;
  */
 public class MainActivity extends ActionBarActivity {
 
-    private static final Countdown COUNTDOWN = Countdown.getInstance();
+    private Countdown countdown;
     private static final Handler HANDLER = new Handler();
 
     private int clockRefreshDelay;
@@ -44,7 +44,7 @@ public class MainActivity extends ActionBarActivity {
     private Button startButton;
     private Button resetButton;
 
-    private final Runnable countdown = new Runnable() {
+    private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             runCountdown(this);
@@ -72,9 +72,6 @@ public class MainActivity extends ActionBarActivity {
         }
     };
 
-    AlertDialog.Builder alertDialogBuilder;
-
-    LayoutInflater layoutInflater;
     private final OnLongClickListener timeSetListener = new OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
@@ -87,6 +84,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        countdown = Countdown.getInstance(this);
         resources = getResources();
         vibrator = getVibrator();
         clockPopup = getClockCallback();
@@ -129,31 +127,31 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void initializeThresholReached() {
-        if (COUNTDOWN.isInThreshold()) {
+        if (countdown.isInThreshold()) {
             thresholdReached = true;
             setBackgroundColor(Color.RED);
         }
     }
 
     private void startHandler() {
-        if (COUNTDOWN.isRunning())
-            HANDLER.postDelayed(countdown, 0);
+        if (countdown.isRunning())
+            HANDLER.postDelayed(runnable, 0);
     }
 
     private void stopHandler() {
-        HANDLER.removeCallbacks(countdown);
+        HANDLER.removeCallbacks(runnable);
     }
 
     private void startCountdown() {
         thresholdReached = false;
-        COUNTDOWN.start();
+        countdown.start();
         setStopListenerOn(startButton);
         startHandler();
     }
 
     private void stopCountdown() {
         stopHandler();
-        COUNTDOWN.stop();
+        countdown.stop();
         setStartListenerOn(startButton);
         setBackgroundColor(Color.WHITE);
     }
@@ -164,12 +162,12 @@ public class MainActivity extends ActionBarActivity {
 
     private void resetCountdown() {
         stopCountdown();
-        COUNTDOWN.reset();
+        countdown.reset();
         refreshViews();
     }
 
     private void updateStartListenerOn(Button button) {
-        if (COUNTDOWN.isRunning())
+        if (countdown.isRunning())
             setStopListenerOn(button);
         else
             setStartListenerOn(button);
@@ -200,18 +198,18 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void refreshClockOn(TextView textView) {
-        int time = COUNTDOWN.getTime();
+        int time = countdown.getTime();
         textView.setText(String.format("%ds", time));
     }
 
     private void refreshStartTextOn(Button button) {
-        int startButtonText = COUNTDOWN.isRunning() ?
+        int startButtonText = countdown.isRunning() ?
                 R.string.stop_countdown : R.string.start_countdown;
         button.setText(startButtonText);
     }
 
     private void refreshSetsOn(TextView textView) {
-        int sets = COUNTDOWN.getSets();
+        int sets = countdown.getSets();
         textView.setText(String.format("%d %s", sets, sets == 1 ?
                 resources.getString(R.string.set_singular) :
                 resources.getString(R.string.set_plural)));
@@ -241,7 +239,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private ClockPopup getClockCallback() {
-        return new ClockPopup(this, COUNTDOWN, new ClockPopup.Callback() {
+        return new ClockPopup(this, countdown, new ClockPopup.Callback() {
             @Override
             public void onOK() {
                 refreshViews();
@@ -250,12 +248,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void runCountdown(Runnable runnable) {
-        if (!COUNTDOWN.isRunning()) {
+        if (!countdown.isRunning()) {
             stopCountdown();
             signalCountdownEnd();
             return;
         }
-        if (!thresholdReached && COUNTDOWN.isInThreshold()) {
+        if (!thresholdReached && countdown.isInThreshold()) {
             signalThresholdReached();
             thresholdReached = true;
         }

@@ -1,7 +1,7 @@
 package com.codernb.setcountdown;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,14 +13,14 @@ import android.widget.EditText;
 public class ClockPopup {
 
     private final AlertDialog.Builder builder;
-    private final Context context;
+    private final Activity context;
     private final Countdown countdown;
     private final Callback callback;
     private EditText countdownTimeView;
     private EditText thresholdTimeView;
     private AlertDialog alertDialog;
 
-    public ClockPopup(Context context, Countdown countdown, Callback callback) {
+    public ClockPopup(Activity context, Countdown countdown, Callback callback) {
         this.context = context;
         this.countdown = countdown;
         this.callback = callback;
@@ -37,6 +37,16 @@ public class ClockPopup {
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 });
+    }
+
+    public void show() {
+        View view = initializeView();
+        alertDialog = builder.setView(view).show();
+    }
+
+    public void dismiss() {
+        if (alertDialog != null)
+            alertDialog.dismiss();
     }
 
     private View initializeView() {
@@ -57,17 +67,9 @@ public class ClockPopup {
         int thresholdTime = Integer.parseInt(thresholdTimeView.getText().toString());
         countdown.setCountdownTime(countdownTime);
         countdown.setThreshold(thresholdTime);
+        Preferences.save(context, R.string.countdown_time_save_key, countdownTime);
+        Preferences.save(context, R.string.threshold_save_key, thresholdTime);
         callback.onOK();
-    }
-
-    public void show() {
-        View view = initializeView();
-        alertDialog = builder.setView(view).show();
-    }
-
-    public void dismiss() {
-        if (alertDialog != null)
-            alertDialog.dismiss();
     }
 
     public interface Callback {

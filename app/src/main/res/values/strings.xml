@@ -14,4 +14,6 @@
     <string name="set_time_cancel">Cancel</string>
     <string name="set_singular">Set</string>
     <string name="set_plural">Sets</string>
+    <string name="countdown_time_save_key">CountdownTime</string>
+    <string name="threshold_save_key">ThresholdTime</string>
 </resources>

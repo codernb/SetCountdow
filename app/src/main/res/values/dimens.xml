@@ -13,6 +13,8 @@
     <integer name="threshold_reached_vibration_repeat">-1</integer>
     <integer name="clock_refresh_delay">50</integer>
     <integer name="volume">80</integer>
+    <integer name="countdown_time_default">60</integer>
+    <integer name="threshold_time_default">10</integer>
     <array name="threshold_reached_vibration_pattern">
         <item>0</item>
         <item>500</item>

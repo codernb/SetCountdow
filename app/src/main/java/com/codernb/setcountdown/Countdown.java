@@ -1,5 +1,8 @@
 package com.codernb.setcountdown;
 
+import android.app.Activity;
+import android.content.res.Resources;
+
 /**
  * Created by cyril on 05.02.16.
  */
@@ -11,14 +14,29 @@ public class Countdown {
     private int sets;
     private boolean running;
 
-    private static final Countdown instance = new Countdown();
+    private static Countdown instance;
 
     private Countdown() {
         ;
     }
 
-    public static Countdown getInstance() {
+    public static Countdown getInstance(Activity activity) {
+        if (instance == null) {
+            instance = new Countdown();
+            instance.load(activity);
+        }
         return instance;
+    }
+
+    private void load(Activity activity) {
+        int countdownTime = Preferences.load(activity,
+                R.string.countdown_time_save_key,
+                R.integer.countdown_time_default);
+        int thresholdTime = Preferences.load(activity,
+                R.string.default_threshold_time,
+                R.integer.threshold_time_default);
+        setCountdownTime(countdownTime);
+        setThreshold(thresholdTime);
     }
 
     public int getCountdownTime() {
@@ -49,9 +67,7 @@ public class Countdown {
     }
 
     public boolean isInThreshold() {
-        if (!isRunning())
-            return false;
-        return getTime() <= getThreshold();
+        return isRunning() && getTime() <= getThreshold();
     }
 
     public void start() {
