@@ -130,6 +130,8 @@ public class MainActivity extends ActionBarActivity {
         if (countdown.isInThreshold()) {
             thresholdReached = true;
             setBackgroundColor(Color.RED);
+        } else {
+            setBackgroundColor(Color.WHITE);
         }
     }
 

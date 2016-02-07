@@ -68,7 +68,7 @@ public class ClockPopup {
         countdown.setCountdownTime(countdownTime);
         countdown.setThreshold(thresholdTime);
         Preferences.save(context, R.string.countdown_time_save_key, countdownTime);
-        Preferences.save(context, R.string.threshold_save_key, thresholdTime);
+        Preferences.save(context, R.string.threshold_time_save_key, thresholdTime);
         callback.onOK();
     }
 

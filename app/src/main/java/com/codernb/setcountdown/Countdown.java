@@ -1,7 +1,6 @@
 package com.codernb.setcountdown;
 
 import android.app.Activity;
-import android.content.res.Resources;
 
 /**
  * Created by cyril on 05.02.16.
@@ -33,7 +32,7 @@ public class Countdown {
                 R.string.countdown_time_save_key,
                 R.integer.countdown_time_default);
         int thresholdTime = Preferences.load(activity,
-                R.string.default_threshold_time,
+                R.string.threshold_time_save_key,
                 R.integer.threshold_time_default);
         sets = Preferences.load(activity, R.string.sets_save_key);
         setCountdownTime(countdownTime);
@@ -85,6 +84,7 @@ public class Countdown {
     public void reset() {
         stop();
         sets = 0;
+        Preferences.save(activity, R.string.sets_save_key, sets);
     }
 
     public int getTime() {
