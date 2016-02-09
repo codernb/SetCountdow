@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -212,14 +213,17 @@ public class MainActivity extends ActionBarActivity {
 
     private void increaseVolume() {
         int newVolume = volume + volumeSteps;
-        if (newVolume <= 100)
-            volume = newVolume;
+        if (newVolume > 100)
+            return;
+        volume = newVolume;
+        Preferences.save(this, R.string.volume_save_key, volume);
     }
 
     private void decreaseVolume() {
         int newVolume = volume - volumeSteps;
         if (newVolume >= 0)
             volume = newVolume;
+        Preferences.save(this, R.string.volume_save_key, volume);
     }
 
     private void setBackgroundColor(int color) {
