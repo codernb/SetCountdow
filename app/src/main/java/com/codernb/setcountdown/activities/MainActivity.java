@@ -9,11 +9,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.codernb.setcountdown.R;
@@ -40,6 +40,7 @@ public class MainActivity extends ActionBarActivity {
     private boolean thresholdReached;
     private int volume;
     private int volumeSteps;
+    private int drinkDelay;
 
     private ClockPopup clockPopup;
     private SetsPopup setsPopup;
@@ -54,11 +55,19 @@ public class MainActivity extends ActionBarActivity {
     private Button resetButton;
     private Button volumePlusButton;
     private Button volumeMinusButton;
+    private ImageButton drinkButton;
 
-    private final Runnable runnable = new Runnable() {
+    private final Runnable countdownRunnable = new Runnable() {
         @Override
         public void run() {
             runCountdown(this);
+        }
+    };
+
+    private final Runnable drinkRunnable = new Runnable() {
+        @Override
+        public void run() {
+            //TODO
         }
     };
 
@@ -98,6 +107,13 @@ public class MainActivity extends ActionBarActivity {
         public void onClick(View v) {
             decreaseVolume();
             refreshViews();
+        }
+    };
+
+    private final OnClickListener drinkListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startDrinkCountdown();
         }
     };
 
@@ -157,6 +173,7 @@ public class MainActivity extends ActionBarActivity {
         volumePlusButton = (Button) findViewById(R.id.volume_plus_button);
         volumeMinusButton = (Button) findViewById(R.id.volume_minus_button);
         volumeView = (TextView) findViewById(R.id.volume_view);
+        drinkButton = (ImageButton) findViewById(R.id.drink_button);
     }
 
     private void initializeButtons() {
@@ -190,11 +207,11 @@ public class MainActivity extends ActionBarActivity {
 
     private void startHandler() {
         if (countdown.isRunning())
-            HANDLER.postDelayed(runnable, 0);
+            HANDLER.postDelayed(countdownRunnable, 0);
     }
 
     private void stopHandler() {
-        HANDLER.removeCallbacks(runnable);
+        HANDLER.removeCallbacks(countdownRunnable);
     }
 
     private void startCountdown() {
@@ -209,6 +226,10 @@ public class MainActivity extends ActionBarActivity {
         countdown.stop();
         setStartListenerOn(startButton);
         setBackgroundColor(Color.WHITE);
+    }
+
+    private void startDrinkCountdown() {
+
     }
 
     private void increaseVolume() {
