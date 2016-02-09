@@ -12,9 +12,11 @@ public class Countdown {
     private int countdownTime;
     private int threshold;
     private long startTime;
+    private long drinkStartTime;
     private int sets;
     private int drinkDelay;
     private boolean running;
+    private boolean drinkDelayRunning;
     private Activity activity;
 
     private static Countdown instance;
@@ -90,6 +92,13 @@ public class Countdown {
         return running;
     }
 
+    public boolean isDrinkDelayRunning() {
+        if (!drinkDelayRunning)
+            return false;
+        drinkDelayRunning = getDrinkDelayTime() > 0;
+        return drinkDelayRunning;
+    }
+
     public boolean isInThreshold() {
         return isRunning() && getTime() <= getThreshold();
     }
@@ -104,6 +113,15 @@ public class Countdown {
         running = false;
     }
 
+    public void startDrinkDelay() {
+        drinkStartTime = System.currentTimeMillis();
+        drinkDelayRunning = true;
+    }
+
+    public void stopDrinkDelay() {
+        drinkDelayRunning = false;
+    }
+
     public void reset() {
         stop();
         setSets(0);
@@ -113,6 +131,13 @@ public class Countdown {
         if (!running)
             return countdownTime;
         int time = countdownTime - (int) (System.currentTimeMillis() - startTime) / 1000;
+        return Math.max(time, 0);
+    }
+
+    public int getDrinkDelayTime() {
+        if (!drinkDelayRunning)
+            return 0;
+        int time = drinkDelay - (int) (System.currentTimeMillis() - drinkStartTime) / 1000;
         return Math.max(time, 0);
     }
 

@@ -52,6 +52,7 @@ public class MainActivity extends ActionBarActivity {
     private TextView clockView;
     private TextView setsView;
     private TextView volumeView;
+    private TextView drinkCountdownView;
     private Button startButton;
     private Button resetButton;
     private Button volumePlusButton;
@@ -68,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
     private final Runnable drinkRunnable = new Runnable() {
         @Override
         public void run() {
-            drinkButton.setVisibility(View.VISIBLE);
+            runDrinkCountdown(this);
         }
     };
 
@@ -162,7 +163,8 @@ public class MainActivity extends ActionBarActivity {
         initializeWidgets();
         initializeButtons();
         initializeValues();
-        initializeThresholReached();
+        initializeThresholdReached();
+        initializeDrinkButton();
         startHandler();
         refreshViews();
     }
@@ -185,6 +187,7 @@ public class MainActivity extends ActionBarActivity {
         volumeMinusButton = (Button) findViewById(R.id.volume_minus_button);
         volumeView = (TextView) findViewById(R.id.volume_view);
         drinkButton = (ImageButton) findViewById(R.id.drink_button);
+        drinkCountdownView = (TextView) findViewById(R.id.drink_countdown);
     }
 
     private void initializeButtons() {
@@ -209,12 +212,19 @@ public class MainActivity extends ActionBarActivity {
         volumeSteps = resources.getInteger(R.integer.volume_steps);
     }
 
-    private void initializeThresholReached() {
+    private void initializeThresholdReached() {
         if (countdown.isInThreshold()) {
             thresholdReached = true;
             setBackgroundColor(Color.RED);
         } else {
             setBackgroundColor(Color.WHITE);
+        }
+    }
+
+    private void initializeDrinkButton() {
+        if (countdown.isDrinkDelayRunning()) {
+            drinkButton.setVisibility(View.INVISIBLE);
+            runDrinkCountdown(drinkRunnable);
         }
     }
 
@@ -225,6 +235,10 @@ public class MainActivity extends ActionBarActivity {
 
     private void stopHandler() {
         HANDLER.removeCallbacks(countdownRunnable);
+    }
+
+    private void stopDrinkDelayHandler() {
+        HANDLER.removeCallbacks(drinkRunnable);
     }
 
     private void startCountdown() {
@@ -242,8 +256,16 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void startDrinkCountdown() {
-        HANDLER.postDelayed(drinkRunnable, countdown.getDrinkDelay() * 60 * 1000);
+        countdown.startDrinkDelay();
+        HANDLER.postDelayed(drinkRunnable, clockRefreshDelay);
         drinkButton.setVisibility(View.INVISIBLE);
+    }
+
+    private void stopDrinkDelayCountdown() {
+        stopDrinkDelayHandler();
+        countdown.stopDrinkDelay();
+        drinkCountdownView.setText("");
+        drinkButton.setVisibility(View.VISIBLE);
     }
 
     private void increaseVolume() {
@@ -318,6 +340,7 @@ public class MainActivity extends ActionBarActivity {
         refreshStartTextOn(startButton);
         refreshSetsOn(setsView);
         refreshVolumeOn(volumeView);
+        refreshDrinkDelayOn(drinkCountdownView);
     }
 
     private void refreshClockOn(TextView textView) {
@@ -340,6 +363,25 @@ public class MainActivity extends ActionBarActivity {
 
     private void refreshVolumeOn(TextView textView) {
         textView.setText(String.format("%d%s", volume, "%"));
+    }
+
+    private void refreshDrinkDelayOn(TextView textView) {
+        if (!countdown.isDrinkDelayRunning()) {
+            textView.setText("");
+            return;
+        }
+        int time = countdown.getDrinkDelayTime();
+        String timeText;
+        if (time >= 120) {
+            time /= 60;
+            timeText = '\n' + resources.getString(R.string.minutes_short_plural);
+        } else if (time >= 60) {
+            time /= 60;
+            timeText = '\n' + resources.getString(R.string.minutes_short_singular);
+        } else {
+            timeText = resources.getString(R.string.seconds_short);
+        }
+        textView.setText(String.format("%d%s", time, timeText));
     }
 
     private void signalCountdownEnd() {
@@ -388,6 +430,15 @@ public class MainActivity extends ActionBarActivity {
         if (!thresholdReached && countdown.isInThreshold()) {
             signalThresholdReached();
             thresholdReached = true;
+        }
+        refreshViews();
+        HANDLER.postDelayed(runnable, clockRefreshDelay);
+    }
+
+    private void runDrinkCountdown(Runnable runnable) {
+        if (!countdown.isDrinkDelayRunning()) {
+            stopDrinkDelayCountdown();
+            return;
         }
         refreshViews();
         HANDLER.postDelayed(runnable, clockRefreshDelay);

@@ -68,14 +68,13 @@
         android:scaleType="fitCenter"
         android:src="@drawable/drink" />
 
-    <!--<TextView-->
-    <!--android:id="@+id/drink_countdown"-->
-    <!--android:layout_width="@dimen/drink_button_size"-->
-    <!--android:layout_height="@dimen/drink_button_size"-->
-    <!--android:layout_alignParentEnd="true"-->
-    <!--android:layout_alignParentRight="true"-->
-    <!--android:gravity="center"-->
-    <!--android:text="100\nmins" />-->
+    <TextView
+        android:id="@+id/drink_countdown"
+        android:layout_width="@dimen/drink_button_size"
+        android:layout_height="@dimen/drink_button_size"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center" />
 
     <LinearLayout
         android:layout_width="match_parent"

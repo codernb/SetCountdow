@@ -32,7 +32,7 @@ public class DrinkPopup extends Popup {
     protected void OKClicked() {
         String drinkDelayText = drinkDelayView.getText().toString();
         int drinkDelay = Integer.parseInt(drinkDelayText.length() == 0 ? "0" : drinkDelayText);
-        countdown.setDrinkDelay(drinkDelay);
+        countdown.setDrinkDelay(drinkDelay * 60);
         callback.onOK();
     }
 
