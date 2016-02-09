@@ -1,10 +1,13 @@
-package com.codernb.setcountdown;
+package com.codernb.setcountdown.popups;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import com.codernb.setcountdown.utils.Countdown;
+import com.codernb.setcountdown.R;
 
 /**
  * Created by cyril on 07.02.16.

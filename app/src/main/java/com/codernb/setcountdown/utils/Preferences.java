@@ -1,4 +1,4 @@
-package com.codernb.setcountdown;
+package com.codernb.setcountdown.utils;
 
 import android.app.Activity;
 import android.content.Context;

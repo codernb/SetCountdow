@@ -1,4 +1,4 @@
-package com.codernb.setcountdown;
+package com.codernb.setcountdown.activities;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -15,7 +15,12 @@ import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.codernb.setcountdown.Popup.Callback;
+import com.codernb.setcountdown.R;
+import com.codernb.setcountdown.popups.ClockPopup;
+import com.codernb.setcountdown.popups.Popup.Callback;
+import com.codernb.setcountdown.popups.SetsPopup;
+import com.codernb.setcountdown.utils.Countdown;
+import com.codernb.setcountdown.utils.Preferences;
 
 /**
  * Created by cyril on 04.02.16.
@@ -32,18 +37,22 @@ public class MainActivity extends ActionBarActivity {
     private int thresholdReachedVibrationRepeat;
     private long[] thresholdVibratePattern;
     private boolean thresholdReached;
+    private int volume;
+    private int volumeSteps;
 
     private ClockPopup clockPopup;
     private SetsPopup setsPopup;
 
     private Vibrator vibrator;
-    private ToneGenerator toneGenerator;
     private Resources resources;
 
     private TextView clockView;
     private TextView setsView;
+    private TextView volumeView;
     private Button startButton;
     private Button resetButton;
+    private Button volumePlusButton;
+    private Button volumeMinusButton;
 
     private final Runnable runnable = new Runnable() {
         @Override
@@ -63,6 +72,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
             stopCountdown();
+            refreshViews();
         }
     };
 
@@ -70,6 +80,23 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
             resetCountdown();
+            refreshViews();
+        }
+    };
+
+    private final OnClickListener volumeUpListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            increaseVolume();
+            refreshViews();
+        }
+    };
+
+    private final OnClickListener volumeDownListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            decreaseVolume();
+            refreshViews();
         }
     };
 
@@ -110,6 +137,7 @@ public class MainActivity extends ActionBarActivity {
         initializeValues();
         initializeThresholReached();
         startHandler();
+        refreshViews();
     }
 
     @Override
@@ -125,6 +153,9 @@ public class MainActivity extends ActionBarActivity {
         setsView = (TextView) findViewById(R.id.sets);
         startButton = (Button) findViewById(R.id.start_button);
         resetButton = (Button) findViewById(R.id.reset_button);
+        volumePlusButton = (Button) findViewById(R.id.volume_plus_button);
+        volumeMinusButton = (Button) findViewById(R.id.volume_minus_button);
+        volumeView = (TextView) findViewById(R.id.volume_view);
     }
 
     private void initializeButtons() {
@@ -132,6 +163,8 @@ public class MainActivity extends ActionBarActivity {
         setResetListenerOn(resetButton);
         setTimeSetListenerOn(clockView);
         setSetsSetListenerOn(setsView);
+        setVolumeUpListenerOn(volumePlusButton);
+        setVolumeDownListenerOn(volumeMinusButton);
     }
 
     private void initializeValues() {
@@ -141,8 +174,8 @@ public class MainActivity extends ActionBarActivity {
         thresholdReachedToneDuration = resources.getInteger(R.integer.threshold_reached_tone_duration);
         thresholdReachedVibrationRepeat = resources.getInteger(R.integer.threshold_reached_vibration_repeat);
         thresholdVibratePattern = getThresholdVibratePattern();
-        int volume = resources.getInteger(R.integer.volume);
-        toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, volume);
+        volume = Preferences.load(this, R.string.volume_save_key, R.integer.volume_default);
+        volumeSteps = resources.getInteger(R.integer.volume_steps);
     }
 
     private void initializeThresholReached() {
@@ -177,6 +210,18 @@ public class MainActivity extends ActionBarActivity {
         setBackgroundColor(Color.WHITE);
     }
 
+    private void increaseVolume() {
+        int newVolume = volume + volumeSteps;
+        if (newVolume <= 100)
+            volume = newVolume;
+    }
+
+    private void decreaseVolume() {
+        int newVolume = volume - volumeSteps;
+        if (newVolume >= 0)
+            volume = newVolume;
+    }
+
     private void setBackgroundColor(int color) {
         clockView.getRootView().setBackgroundColor(color);
     }
@@ -184,7 +229,6 @@ public class MainActivity extends ActionBarActivity {
     private void resetCountdown() {
         stopCountdown();
         countdown.reset();
-        refreshViews();
     }
 
     private void updateStartListenerOn(Button button) {
@@ -196,12 +240,10 @@ public class MainActivity extends ActionBarActivity {
 
     private void setStartListenerOn(Button button) {
         button.setOnClickListener(startListener);
-        refreshViews();
     }
 
     private void setStopListenerOn(Button button) {
         button.setOnClickListener(stopListener);
-        refreshViews();
     }
 
     private void setResetListenerOn(Button button) {
@@ -216,10 +258,19 @@ public class MainActivity extends ActionBarActivity {
         view.setOnLongClickListener(setsSetListener);
     }
 
+    private void setVolumeUpListenerOn(Button button) {
+        button.setOnClickListener(volumeUpListener);
+    }
+
+    private void setVolumeDownListenerOn(Button button) {
+        button.setOnClickListener(volumeDownListener);
+    }
+
     private void refreshViews() {
         refreshClockOn(clockView);
         refreshStartTextOn(startButton);
         refreshSetsOn(setsView);
+        refreshVolumeOn(volumeView);
     }
 
     private void refreshClockOn(TextView textView) {
@@ -240,13 +291,19 @@ public class MainActivity extends ActionBarActivity {
                 resources.getString(R.string.set_plural)));
     }
 
+    private void refreshVolumeOn(TextView textView) {
+        textView.setText(String.format("%d%s", volume, "%"));
+    }
+
     private void signalCountdownEnd() {
+        ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, volume);
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, countdownEndToneDuration);
         vibrator.vibrate(countdownEndVibrationDuration);
     }
 
     private void signalThresholdReached() {
         setBackgroundColor(Color.RED);
+        ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, volume);
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, thresholdReachedToneDuration);
         vibrator.vibrate(thresholdVibratePattern, thresholdReachedVibrationRepeat);
     }
