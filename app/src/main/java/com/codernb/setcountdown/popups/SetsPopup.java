@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.codernb.setcountdown.utils.Countdown;
-import com.codernb.setcountdown.utils.Preferences;
 import com.codernb.setcountdown.R;
 
 /**
@@ -34,7 +33,6 @@ public class SetsPopup extends Popup {
         String setsText = setsView.getText().toString();
         int sets = Integer.parseInt(setsText.length() == 0 ? "0" : setsText);
         countdown.setSets(sets);
-        Preferences.save(context, R.string.sets_save_key, sets);
         callback.onOK();
     }
 }

@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.codernb.setcountdown.R;
 import com.codernb.setcountdown.popups.ClockPopup;
+import com.codernb.setcountdown.popups.DrinkPopup;
 import com.codernb.setcountdown.popups.Popup.Callback;
 import com.codernb.setcountdown.popups.SetsPopup;
 import com.codernb.setcountdown.utils.Countdown;
@@ -40,10 +41,10 @@ public class MainActivity extends ActionBarActivity {
     private boolean thresholdReached;
     private int volume;
     private int volumeSteps;
-    private int drinkDelay;
 
     private ClockPopup clockPopup;
     private SetsPopup setsPopup;
+    private DrinkPopup drinkPopup;
 
     private Vibrator vibrator;
     private Resources resources;
@@ -67,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
     private final Runnable drinkRunnable = new Runnable() {
         @Override
         public void run() {
-            //TODO
+            drinkButton.setVisibility(View.VISIBLE);
         }
     };
 
@@ -133,6 +134,14 @@ public class MainActivity extends ActionBarActivity {
         }
     };
 
+    private final OnLongClickListener drinkSetListener = new OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            drinkPopup.show();
+            return true;
+        }
+    };
+
     private final Callback popupCallback = new Callback() {
         @Override
         public void onOK() {
@@ -149,6 +158,7 @@ public class MainActivity extends ActionBarActivity {
         vibrator = getVibrator();
         clockPopup = getClockCallback();
         setsPopup = getSetsCallback();
+        drinkPopup = getDrinkCallback();
         initializeWidgets();
         initializeButtons();
         initializeValues();
@@ -163,6 +173,7 @@ public class MainActivity extends ActionBarActivity {
         stopHandler();
         clockPopup.dismiss();
         setsPopup.dismiss();
+        drinkPopup.dismiss();
     }
 
     private void initializeWidgets() {
@@ -183,6 +194,8 @@ public class MainActivity extends ActionBarActivity {
         setSetsSetListenerOn(setsView);
         setVolumeUpListenerOn(volumePlusButton);
         setVolumeDownListenerOn(volumeMinusButton);
+        setDrinkListenerOn(drinkButton);
+        setDrinkSetListenerOn(drinkButton);
     }
 
     private void initializeValues() {
@@ -229,7 +242,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void startDrinkCountdown() {
-
+        HANDLER.postDelayed(drinkRunnable, countdown.getDrinkDelay() * 60 * 1000);
+        drinkButton.setVisibility(View.INVISIBLE);
     }
 
     private void increaseVolume() {
@@ -289,6 +303,14 @@ public class MainActivity extends ActionBarActivity {
 
     private void setVolumeDownListenerOn(Button button) {
         button.setOnClickListener(volumeDownListener);
+    }
+
+    private void setDrinkListenerOn(ImageButton imageButton) {
+        imageButton.setOnClickListener(drinkListener);
+    }
+
+    private void setDrinkSetListenerOn(ImageButton imageButton) {
+        imageButton.setOnLongClickListener(drinkSetListener);
     }
 
     private void refreshViews() {
@@ -351,6 +373,10 @@ public class MainActivity extends ActionBarActivity {
 
     private SetsPopup getSetsCallback() {
         return new SetsPopup(this, countdown, popupCallback);
+    }
+
+    private DrinkPopup getDrinkCallback() {
+        return new DrinkPopup(this, countdown, popupCallback);
     }
 
     private void runCountdown(Runnable runnable) {

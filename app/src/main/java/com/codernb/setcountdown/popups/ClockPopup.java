@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.codernb.setcountdown.utils.Countdown;
-import com.codernb.setcountdown.utils.Preferences;
 import com.codernb.setcountdown.R;
 
 /**
@@ -42,8 +41,6 @@ public class ClockPopup extends Popup {
         int thresholdTime = Integer.parseInt(thresholdText.length() == 0 ? "0" : thresholdText);
         countdown.setCountdownTime(countdownTime);
         countdown.setThreshold(thresholdTime);
-        Preferences.save(context, R.string.countdown_time_save_key, countdownTime);
-        Preferences.save(context, R.string.threshold_time_save_key, thresholdTime);
         callback.onOK();
     }
 

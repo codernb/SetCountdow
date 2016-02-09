@@ -16,8 +16,12 @@
     <string name="threshold_time_save_key">ThresholdTime</string>
     <string name="sets_save_key">Sets</string>
     <string name="seconds_short">s</string>
+    <string name="minutes_short_singular">min</string>
+    <string name="minutes_short_plural">mins</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
     <string name="drink_button_description">Drink is ready</string>
     <string name="volume_save_key">volume</string>
+    <string name="drink_delay_save_key">drinkDelay</string>
+    <string name="set_drink_delay_hint">Drink Delay</string>
 </resources>
