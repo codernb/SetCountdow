@@ -1,6 +1,6 @@
 package com.codernb.setcountdown.popups;
 
-import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.widget.EditText;
 
@@ -14,14 +14,14 @@ public class DrinkPopup extends Popup {
 
     private EditText drinkDelayView;
 
-    public DrinkPopup(Activity context, Countdown countdown, Callback callback) {
+    public DrinkPopup(Context context, Countdown countdown, Callback callback) {
         super(context, countdown, callback);
     }
 
     @Override
     protected View initializeView() {
         View view = getView(R.layout.drink_popup);
-        String drinkDelay = String.format("%d", countdown.getDrinkDelay());
+        String drinkDelay = String.format("%d", countdown.getDrinkDelay() / 60);
         drinkDelayView = (EditText) view.findViewById(R.id.set_drink_delay);
         drinkDelayView.setText(drinkDelay);
         drinkDelayView.setSelection(drinkDelay.length());

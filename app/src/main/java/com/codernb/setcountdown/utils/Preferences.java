@@ -11,36 +11,39 @@ import android.content.res.Resources;
  */
 public class Preferences {
 
-    private Preferences() {
-        ;
+    private final Activity activity;
+
+    public Preferences(Activity activity) {
+        this.activity = activity;
     }
 
-    public static void save(Activity activity, int id, int value) {
+    public void save(int keyId, int value) {
         Resources resources = activity.getResources();
-        Editor editor = getEditorFrom(activity);
-        editor.putInt(resources.getString(id), value);
+        Editor editor = getEditor();
+        editor.putInt(resources.getString(keyId), value);
         editor.commit();
     }
 
-    public static int load(Activity activity, int id) {
-        return load(activity, activity.getResources(), id, 0);
-    }
-
-    public static int load(Activity activity, int id, int defaultValueId) {
+    public int load(int keyId) {
         Resources resources = activity.getResources();
-        return load(activity, resources, id, resources.getInteger(defaultValueId));
+        return load(resources, keyId, 0);
     }
 
-    private static int load(Activity activity, Resources resources, int id, int defaultValue) {
-        SharedPreferences sharedPreferences = getSharedPreferencesFrom(activity);
-        return sharedPreferences.getInt(resources.getString(id), defaultValue);
+    public int load(int keyId, int defaultValueId) {
+        Resources resources = activity.getResources();
+        return load(resources, keyId, resources.getInteger(defaultValueId));
     }
 
-    private static Editor getEditorFrom(Activity activity) {
-        return getSharedPreferencesFrom(activity).edit();
+    private int load(Resources resources, int keyId, int defaultValue) {
+        SharedPreferences sharedPreferences = getSharedPreferences();
+        return sharedPreferences.getInt(resources.getString(keyId), defaultValue);
     }
 
-    private static SharedPreferences getSharedPreferencesFrom(Activity activity) {
+    private Editor getEditor() {
+        return getSharedPreferences().edit();
+    }
+
+    private SharedPreferences getSharedPreferences() {
         return activity.getPreferences(Context.MODE_PRIVATE);
     }
 

@@ -1,13 +1,10 @@
 package com.codernb.setcountdown.activities;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,40 +20,34 @@ import com.codernb.setcountdown.popups.Popup.Callback;
 import com.codernb.setcountdown.popups.SetsPopup;
 import com.codernb.setcountdown.utils.Countdown;
 import com.codernb.setcountdown.utils.Preferences;
+import com.codernb.setcountdown.utils.signalers.Signaller;
 
 /**
  * Created by cyril on 04.02.16.
  */
 public class MainActivity extends ActionBarActivity {
 
-    private Countdown countdown;
     private static final Handler HANDLER = new Handler();
-
     private int clockRefreshDelay;
-    private int countdownEndToneDuration;
-    private int countdownEndVibrationDuration;
-    private int thresholdReachedToneDuration;
-    private int thresholdReachedVibrationRepeat;
-    private long[] thresholdVibratePattern;
-    private boolean thresholdReached;
-    private int volume;
-    private int volumeSteps;
 
+    private boolean thresholdReached;
+
+    private Preferences preferences;
+    private Countdown countdown;
+    private Resources resources;
     private ClockPopup clockPopup;
     private SetsPopup setsPopup;
     private DrinkPopup drinkPopup;
+    private Signaller signaller;
 
-    private Vibrator vibrator;
-    private Resources resources;
-
-    private TextView clockView;
+    private TextView timeView;
     private TextView setsView;
     private TextView volumeView;
-    private TextView drinkCountdownView;
+    private TextView drinkDelayView;
     private Button startButton;
     private Button resetButton;
-    private Button volumePlusButton;
-    private Button volumeMinusButton;
+    private Button volumeUpButton;
+    private Button volumeDownButton;
     private ImageButton drinkButton;
 
     private final Runnable countdownRunnable = new Runnable() {
@@ -99,7 +90,7 @@ public class MainActivity extends ActionBarActivity {
     private final OnClickListener volumeUpListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            increaseVolume();
+            signaller.increaseVolume();
             refreshViews();
         }
     };
@@ -107,7 +98,7 @@ public class MainActivity extends ActionBarActivity {
     private final OnClickListener volumeDownListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            decreaseVolume();
+            signaller.decreaseVolume();
             refreshViews();
         }
     };
@@ -154,62 +145,63 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        countdown = Countdown.getInstance(this);
+        preferences = new Preferences(this);
+        countdown = new Countdown(preferences);
         resources = getResources();
-        vibrator = getVibrator();
         clockPopup = getClockCallback();
         setsPopup = getSetsCallback();
         drinkPopup = getDrinkCallback();
+        signaller = new Signaller(this,preferences);
         initializeWidgets();
         initializeButtons();
         initializeValues();
         initializeThresholdReached();
         initializeDrinkButton();
         startHandler();
+        startDrinkDelayHandler();
         refreshViews();
+    }
+
+    @Override
+    public void onBackPressed() {
+        ;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         stopHandler();
+        stopDrinkDelayHandler();
         clockPopup.dismiss();
         setsPopup.dismiss();
         drinkPopup.dismiss();
     }
 
     private void initializeWidgets() {
-        clockView = (TextView) findViewById(R.id.clock);
+        timeView = (TextView) findViewById(R.id.clock);
         setsView = (TextView) findViewById(R.id.sets);
         startButton = (Button) findViewById(R.id.start_button);
         resetButton = (Button) findViewById(R.id.reset_button);
-        volumePlusButton = (Button) findViewById(R.id.volume_plus_button);
-        volumeMinusButton = (Button) findViewById(R.id.volume_minus_button);
+        volumeUpButton = (Button) findViewById(R.id.volume_plus_button);
+        volumeDownButton = (Button) findViewById(R.id.volume_minus_button);
         volumeView = (TextView) findViewById(R.id.volume_view);
         drinkButton = (ImageButton) findViewById(R.id.drink_button);
-        drinkCountdownView = (TextView) findViewById(R.id.drink_countdown);
+        drinkDelayView = (TextView) findViewById(R.id.drink_countdown);
     }
 
     private void initializeButtons() {
-        updateStartListenerOn(startButton);
-        setResetListenerOn(resetButton);
-        setTimeSetListenerOn(clockView);
-        setSetsSetListenerOn(setsView);
-        setVolumeUpListenerOn(volumePlusButton);
-        setVolumeDownListenerOn(volumeMinusButton);
-        setDrinkListenerOn(drinkButton);
-        setDrinkSetListenerOn(drinkButton);
+        updateStartButtonListener();
+        resetButton.setOnClickListener(resetListener);
+        timeView.setOnLongClickListener(timeSetListener);
+        setsView.setOnLongClickListener(setsSetListener);
+        volumeUpButton.setOnClickListener(volumeUpListener);
+        volumeDownButton.setOnClickListener(volumeDownListener);
+        drinkButton.setOnClickListener(drinkListener);
+        drinkButton.setOnLongClickListener(drinkSetListener);
     }
 
     private void initializeValues() {
         clockRefreshDelay = resources.getInteger(R.integer.clock_refresh_delay);
-        countdownEndToneDuration = resources.getInteger(R.integer.countdown_end_tone_duration);
-        countdownEndVibrationDuration = resources.getInteger(R.integer.countdown_end_vibration_duration);
-        thresholdReachedToneDuration = resources.getInteger(R.integer.threshold_reached_tone_duration);
-        thresholdReachedVibrationRepeat = resources.getInteger(R.integer.threshold_reached_vibration_repeat);
-        thresholdVibratePattern = getThresholdVibratePattern();
-        volume = Preferences.load(this, R.string.volume_save_key, R.integer.volume_default);
-        volumeSteps = resources.getInteger(R.integer.volume_steps);
     }
 
     private void initializeThresholdReached() {
@@ -237,6 +229,11 @@ public class MainActivity extends ActionBarActivity {
         HANDLER.removeCallbacks(countdownRunnable);
     }
 
+    private void startDrinkDelayHandler() {
+        if (countdown.isDrinkDelayRunning())
+            HANDLER.postDelayed(drinkRunnable, 0);
+    }
+
     private void stopDrinkDelayHandler() {
         HANDLER.removeCallbacks(drinkRunnable);
     }
@@ -244,15 +241,14 @@ public class MainActivity extends ActionBarActivity {
     private void startCountdown() {
         thresholdReached = false;
         countdown.start();
-        setStopListenerOn(startButton);
+        updateStartButtonListener();
         startHandler();
     }
 
     private void stopCountdown() {
         stopHandler();
         countdown.stop();
-        setStartListenerOn(startButton);
-        setBackgroundColor(Color.WHITE);
+        updateStartButtonListener();
     }
 
     private void startDrinkCountdown() {
@@ -264,27 +260,12 @@ public class MainActivity extends ActionBarActivity {
     private void stopDrinkDelayCountdown() {
         stopDrinkDelayHandler();
         countdown.stopDrinkDelay();
-        drinkCountdownView.setText("");
+        drinkDelayView.setText("");
         drinkButton.setVisibility(View.VISIBLE);
     }
 
-    private void increaseVolume() {
-        int newVolume = volume + volumeSteps;
-        if (newVolume > 100)
-            return;
-        volume = newVolume;
-        Preferences.save(this, R.string.volume_save_key, volume);
-    }
-
-    private void decreaseVolume() {
-        int newVolume = volume - volumeSteps;
-        if (newVolume >= 0)
-            volume = newVolume;
-        Preferences.save(this, R.string.volume_save_key, volume);
-    }
-
     private void setBackgroundColor(int color) {
-        clockView.getRootView().setBackgroundColor(color);
+        timeView.getRootView().setBackgroundColor(color);
     }
 
     private void resetCountdown() {
@@ -292,82 +273,47 @@ public class MainActivity extends ActionBarActivity {
         countdown.reset();
     }
 
-    private void updateStartListenerOn(Button button) {
+    private void updateStartButtonListener() {
         if (countdown.isRunning())
-            setStopListenerOn(button);
+
+            startButton.setOnClickListener(stopListener);
         else
-            setStartListenerOn(button);
-    }
-
-    private void setStartListenerOn(Button button) {
-        button.setOnClickListener(startListener);
-    }
-
-    private void setStopListenerOn(Button button) {
-        button.setOnClickListener(stopListener);
-    }
-
-    private void setResetListenerOn(Button button) {
-        button.setOnClickListener(resetListener);
-    }
-
-    private void setTimeSetListenerOn(View view) {
-        view.setOnLongClickListener(timeSetListener);
-    }
-
-    private void setSetsSetListenerOn(View view) {
-        view.setOnLongClickListener(setsSetListener);
-    }
-
-    private void setVolumeUpListenerOn(Button button) {
-        button.setOnClickListener(volumeUpListener);
-    }
-
-    private void setVolumeDownListenerOn(Button button) {
-        button.setOnClickListener(volumeDownListener);
-    }
-
-    private void setDrinkListenerOn(ImageButton imageButton) {
-        imageButton.setOnClickListener(drinkListener);
-    }
-
-    private void setDrinkSetListenerOn(ImageButton imageButton) {
-        imageButton.setOnLongClickListener(drinkSetListener);
+            startButton.setOnClickListener(startListener);
     }
 
     private void refreshViews() {
-        refreshClockOn(clockView);
-        refreshStartTextOn(startButton);
-        refreshSetsOn(setsView);
-        refreshVolumeOn(volumeView);
-        refreshDrinkDelayOn(drinkCountdownView);
+        refreshClockView();
+        refreshStartButtonText();
+        refreshSetsOn();
+        refreshVolumeView();
+        refreshDrinkDelayOn();
     }
 
-    private void refreshClockOn(TextView textView) {
+    private void refreshClockView() {
         int time = countdown.getTime();
-        textView.setText(String.format("%ds", time));
+        timeView.setText(String.format("%ds", time));
     }
 
-    private void refreshStartTextOn(Button button) {
+    private void refreshStartButtonText() {
         int startButtonText = countdown.isRunning() ?
                 R.string.stop_countdown : R.string.start_countdown;
-        button.setText(startButtonText);
+        startButton.setText(startButtonText);
     }
 
-    private void refreshSetsOn(TextView textView) {
+    private void refreshSetsOn() {
         int sets = countdown.getSets();
-        textView.setText(String.format("%d %s", sets, sets == 1 ?
+        setsView.setText(String.format("%d %s", sets, sets == 1 ?
                 resources.getString(R.string.set_singular) :
                 resources.getString(R.string.set_plural)));
     }
 
-    private void refreshVolumeOn(TextView textView) {
-        textView.setText(String.format("%d%s", volume, "%"));
+    private void refreshVolumeView() {
+        volumeView.setText(String.format("%d%s", signaller.getVolume(), "%"));
     }
 
-    private void refreshDrinkDelayOn(TextView textView) {
+    private void refreshDrinkDelayOn() {
         if (!countdown.isDrinkDelayRunning()) {
-            textView.setText("");
+            drinkDelayView.setText("");
             return;
         }
         int time = countdown.getDrinkDelayTime();
@@ -381,32 +327,7 @@ public class MainActivity extends ActionBarActivity {
         } else {
             timeText = resources.getString(R.string.seconds_short);
         }
-        textView.setText(String.format("%d%s", time, timeText));
-    }
-
-    private void signalCountdownEnd() {
-        ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, volume);
-        toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, countdownEndToneDuration);
-        vibrator.vibrate(countdownEndVibrationDuration);
-    }
-
-    private void signalThresholdReached() {
-        setBackgroundColor(Color.RED);
-        ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, volume);
-        toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, thresholdReachedToneDuration);
-        vibrator.vibrate(thresholdVibratePattern, thresholdReachedVibrationRepeat);
-    }
-
-    private Vibrator getVibrator() {
-        return (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-    }
-
-    private long[] getThresholdVibratePattern() {
-        int[] ints = resources.getIntArray(R.array.threshold_reached_vibration_pattern);
-        long[] thresholdVibratePattern = new long[ints.length];
-        for (int i = 0; i < ints.length; i++)
-            thresholdVibratePattern[i] = (long) ints[i];
-        return thresholdVibratePattern;
+        drinkDelayView.setText(String.format("%d%s", time, timeText));
     }
 
     private ClockPopup getClockCallback() {
@@ -424,24 +345,23 @@ public class MainActivity extends ActionBarActivity {
     private void runCountdown(Runnable runnable) {
         if (!countdown.isRunning()) {
             stopCountdown();
-            signalCountdownEnd();
-            return;
-        }
-        if (!thresholdReached && countdown.isInThreshold()) {
-            signalThresholdReached();
-            thresholdReached = true;
+            signaller.signalCountdownEnd();
+        } else {
+            if (!thresholdReached && countdown.isInThreshold()) {
+                signaller.signalThresholdReached();
+                thresholdReached = true;
+            }
+            HANDLER.postDelayed(runnable, clockRefreshDelay);
         }
         refreshViews();
-        HANDLER.postDelayed(runnable, clockRefreshDelay);
     }
 
     private void runDrinkCountdown(Runnable runnable) {
-        if (!countdown.isDrinkDelayRunning()) {
+        if (!countdown.isDrinkDelayRunning())
             stopDrinkDelayCountdown();
-            return;
-        }
+        else
+            HANDLER.postDelayed(runnable, clockRefreshDelay);
         refreshViews();
-        HANDLER.postDelayed(runnable, clockRefreshDelay);
     }
 
 }

@@ -9,6 +9,8 @@ import com.codernb.setcountdown.R;
  */
 public class Countdown {
 
+    private final Preferences preferences;
+
     private int countdownTime;
     private int threshold;
     private long startTime;
@@ -17,32 +19,21 @@ public class Countdown {
     private int drinkDelay;
     private boolean running;
     private boolean drinkDelayRunning;
-    private Activity activity;
 
-    private static Countdown instance;
-
-    private Countdown(Activity activity) {
-        this.activity = activity;
-        load(activity);
+    public Countdown(Preferences preferences) {
+        this.preferences = preferences;
+        load();
     }
 
-    public static Countdown getInstance(Activity activity) {
-        if (instance == null)
-            instance = new Countdown(activity);
-        else
-            instance.activity = activity;
-        return instance;
-    }
-
-    private void load(Activity activity) {
-        int countdownTime = Preferences.load(activity,
+    private void load() {
+        int countdownTime = preferences.load(
                 R.string.countdown_time_save_key,
                 R.integer.countdown_time_default);
-        int thresholdTime = Preferences.load(activity,
+        int thresholdTime = preferences.load(
                 R.string.threshold_time_save_key,
                 R.integer.threshold_time_default);
-        sets = Preferences.load(activity, R.string.sets_save_key);
-        drinkDelay = Preferences.load(activity,
+        sets = preferences.load(R.string.sets_save_key);
+        drinkDelay = preferences.load(
                 R.string.drink_delay_save_key,
                 R.integer.drink_delay_default);
         setCountdownTime(countdownTime);
@@ -55,7 +46,7 @@ public class Countdown {
 
     public void setCountdownTime(int countdownTime) {
         this.countdownTime = countdownTime;
-        Preferences.save(activity, R.string.countdown_time_save_key, countdownTime);
+        preferences.save(R.string.countdown_time_save_key, countdownTime);
     }
 
     public int getThreshold() {
@@ -64,7 +55,7 @@ public class Countdown {
 
     public void setThreshold(int threshold) {
         this.threshold = threshold;
-        Preferences.save(activity, R.string.threshold_time_save_key, threshold);
+        preferences.save(R.string.threshold_time_save_key, threshold);
     }
 
     public int getSets() {
@@ -73,7 +64,7 @@ public class Countdown {
 
     public void setSets(int sets) {
         this.sets = sets;
-        Preferences.save(activity, R.string.sets_save_key, sets);
+        preferences.save(R.string.sets_save_key, sets);
     }
 
     public int getDrinkDelay() {
@@ -82,7 +73,7 @@ public class Countdown {
 
     public void setDrinkDelay(int drinkDelay) {
         this.drinkDelay = drinkDelay;
-        Preferences.save(activity, R.string.drink_delay_save_key, drinkDelay);
+        preferences.save(R.string.drink_delay_save_key, drinkDelay);
     }
 
     public boolean isRunning() {

@@ -1,6 +1,7 @@
 package com.codernb.setcountdown.popups;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.widget.EditText;
 
@@ -15,7 +16,7 @@ public class ClockPopup extends Popup {
     private EditText countdownTimeView;
     private EditText thresholdTimeView;
 
-    public ClockPopup(Activity context, Countdown countdown, Callback callback) {
+    public ClockPopup(Context context, Countdown countdown, Callback callback) {
         super(context, countdown, callback);
     }
 
