@@ -1,7 +1,5 @@
 package com.codernb.setcountdown.utils;
 
-import android.app.Activity;
-
 import com.codernb.setcountdown.R;
 
 /**

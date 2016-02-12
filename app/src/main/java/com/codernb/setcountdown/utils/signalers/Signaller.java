@@ -3,8 +3,6 @@ package com.codernb.setcountdown.utils.signalers;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.view.View;
 
 import com.codernb.setcountdown.R;

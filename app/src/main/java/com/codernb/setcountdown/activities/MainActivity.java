@@ -1,6 +1,5 @@
 package com.codernb.setcountdown.activities;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ public class MainActivity extends ActionBarActivity {
 
     private boolean thresholdReached;
 
-    private Preferences preferences;
     private Countdown countdown;
     private Resources resources;
     private ClockPopup clockPopup;
@@ -145,13 +143,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        preferences = new Preferences(this);
+        Preferences preferences = new Preferences(this);
         countdown = new Countdown(preferences);
         resources = getResources();
         clockPopup = getClockCallback();
         setsPopup = getSetsCallback();
         drinkPopup = getDrinkCallback();
-        signaller = new Signaller(this,preferences);
+        signaller = new Signaller(this, preferences);
         initializeWidgets();
         initializeButtons();
         initializeValues();

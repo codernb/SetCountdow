@@ -1,12 +1,11 @@
 package com.codernb.setcountdown.popups;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.EditText;
 
-import com.codernb.setcountdown.utils.Countdown;
 import com.codernb.setcountdown.R;
+import com.codernb.setcountdown.utils.Countdown;
 
 /**
  * Created by cyril on 07.02.16.
