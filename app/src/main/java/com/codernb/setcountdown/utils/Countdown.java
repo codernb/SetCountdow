@@ -1,5 +1,7 @@
 package com.codernb.setcountdown.utils;
 
+import android.content.res.Resources;
+
 import com.codernb.setcountdown.R;
 
 /**
@@ -10,12 +12,12 @@ public class Countdown {
     private final Preferences preferences;
 
     private int countdownTime;
-    private int threshold;
-    private long startTime;
-    private long drinkStartTime;
+    private int thresholdTime;
+    private int drinkDelayTime;
     private int sets;
-    private int drinkDelay;
-    private boolean running;
+    private long countdownStartTime;
+    private long drinkDelayStartTime;
+    private boolean countdownRunning;
     private boolean drinkDelayRunning;
 
     public Countdown(Preferences preferences) {
@@ -24,18 +26,20 @@ public class Countdown {
     }
 
     private void load() {
-        int countdownTime = preferences.load(
+        countdownTime = preferences.loadInt(
                 R.string.countdown_time_save_key,
                 R.integer.countdown_time_default);
-        int thresholdTime = preferences.load(
+        thresholdTime = preferences.loadInt(
                 R.string.threshold_time_save_key,
                 R.integer.threshold_time_default);
-        sets = preferences.load(R.string.sets_save_key);
-        drinkDelay = preferences.load(
+        sets = preferences.loadInt(R.string.sets_save_key);
+        drinkDelayTime = preferences.loadInt(
                 R.string.drink_delay_save_key,
                 R.integer.drink_delay_default);
-        setCountdownTime(countdownTime);
-        setThreshold(thresholdTime);
+        drinkDelayStartTime = preferences.loadLong(R.string.drink_delay_start_time_save_key);
+        countdownStartTime = preferences.loadLong(R.string.countdown_start_time_save_key);
+        countdownRunning = preferences.loadBoolean(R.string.countdown_running_save_key);
+        drinkDelayRunning = preferences.loadBoolean(R.string.drink_delay_running_save_key);
     }
 
     public int getCountdownTime() {
@@ -47,13 +51,13 @@ public class Countdown {
         preferences.save(R.string.countdown_time_save_key, countdownTime);
     }
 
-    public int getThreshold() {
-        return threshold;
+    public int getThresholdTime() {
+        return thresholdTime;
     }
 
-    public void setThreshold(int threshold) {
-        this.threshold = threshold;
-        preferences.save(R.string.threshold_time_save_key, threshold);
+    public void setThresholdTime(int thresholdTime) {
+        this.thresholdTime = thresholdTime;
+        preferences.save(R.string.threshold_time_save_key, thresholdTime);
     }
 
     public int getSets() {
@@ -65,69 +69,87 @@ public class Countdown {
         preferences.save(R.string.sets_save_key, sets);
     }
 
-    public int getDrinkDelay() {
-        return drinkDelay;
+    public int getDrinkDelayTime() {
+        return drinkDelayTime;
     }
 
-    public void setDrinkDelay(int drinkDelay) {
-        this.drinkDelay = drinkDelay;
-        preferences.save(R.string.drink_delay_save_key, drinkDelay);
+    public void setDrinkDelayTime(int drinkDelayTime) {
+        this.drinkDelayTime = drinkDelayTime;
+        preferences.save(R.string.drink_delay_save_key, drinkDelayTime);
     }
 
-    public boolean isRunning() {
-        if (!running)
+    public boolean isCountdownRunning() {
+        if (!countdownRunning)
             return false;
-        running = getTime() > 0;
-        return running;
+        countdownRunning = getRemainingCountdownTime() > 0;
+        return countdownRunning;
     }
 
     public boolean isDrinkDelayRunning() {
         if (!drinkDelayRunning)
             return false;
-        drinkDelayRunning = getDrinkDelayTime() > 0;
+        drinkDelayRunning = getRemainingDrinkDelayTime() > 0;
         return drinkDelayRunning;
     }
 
     public boolean isInThreshold() {
-        return isRunning() && getTime() <= getThreshold();
+        return isCountdownRunning() && getRemainingCountdownTime() <= getThresholdTime();
     }
 
-    public void start() {
-        setSets(getSets() + 1);
-        startTime = System.currentTimeMillis();
-        running = true;
+    public void startCountdown() {
+        setSets(sets + 1);
+        countdownStartTime = System.currentTimeMillis();
+        preferences.save(R.string.countdown_start_time_save_key, countdownStartTime);
+        countdownRunning = true;
+        preferences.save(R.string.countdown_running_save_key, true);
     }
 
-    public void stop() {
-        running = false;
+    public void stopCountdown() {
+        countdownRunning = false;
+        preferences.save(R.string.countdown_running_save_key, false);
     }
 
     public void startDrinkDelay() {
-        drinkStartTime = System.currentTimeMillis();
+        drinkDelayStartTime = System.currentTimeMillis();
+        preferences.save(R.string.drink_delay_start_time_save_key, drinkDelayStartTime);
         drinkDelayRunning = true;
+        preferences.save(R.string.drink_delay_running_save_key, true);
     }
 
     public void stopDrinkDelay() {
         drinkDelayRunning = false;
+        preferences.save(R.string.drink_delay_running_save_key, false);
     }
 
     public void reset() {
-        stop();
+        stopCountdown();
         setSets(0);
     }
 
-    public int getTime() {
-        if (!running)
+    public int getRemainingCountdownTime() {
+        if (!countdownRunning)
             return countdownTime;
-        int time = countdownTime - (int) (System.currentTimeMillis() - startTime) / 1000;
+        int time = countdownTime - (int) (System.currentTimeMillis() - countdownStartTime) / 1000;
         return Math.max(time, 0);
     }
 
-    public int getDrinkDelayTime() {
+    public int getRemainingDrinkDelayTime() {
         if (!drinkDelayRunning)
             return 0;
-        int time = drinkDelay - (int) (System.currentTimeMillis() - drinkStartTime) / 1000;
+        int time = drinkDelayTime - (int) (System.currentTimeMillis() - drinkDelayStartTime) / 1000;
         return Math.max(time, 0);
+    }
+
+    public String getDrinkDelayText(Resources resources) {
+        int time = getRemainingDrinkDelayTime();
+        String timeText;
+        if (time >= 120) {
+            return String.format("%d\n%s", time / 60, resources.getString(R.string.minutes_short_plural));
+        }
+        if (time >= 60) {
+            return String.format("%d\n%s", time / 60, resources.getString(R.string.minutes_short_singular));
+        }
+        return String.format("%d%s", time, resources.getString(R.string.seconds_short));
     }
 
 }

@@ -27,7 +27,7 @@ public class Signaller {
         this.activity = activity;
         Resources resources = activity.getResources();
         rootView = getRootView();
-        volume = preferences.load(R.string.volume_save_key, R.integer.volume_default);
+        volume = preferences.loadInt(R.string.volume_save_key, R.integer.volume_default);
         volumeSteps = resources.getInteger(R.integer.volume_steps);
         vibrator = new Vibrator(activity);
         speaker = new Speaker(resources);

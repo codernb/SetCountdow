@@ -1,7 +1,5 @@
 package com.codernb.setcountdown.utils;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
@@ -11,40 +9,54 @@ import android.content.res.Resources;
  */
 public class Preferences {
 
-    private final Activity activity;
+    private final Resources resources;
+    private final SharedPreferences sharedPreferences;
 
-    public Preferences(Activity activity) {
-        this.activity = activity;
+    public Preferences(Resources resources, SharedPreferences sharedPreferences) {
+        this.resources = resources;
+        this.sharedPreferences = sharedPreferences;
     }
 
     public void save(int keyId, int value) {
-        Resources resources = activity.getResources();
-        Editor editor = getEditor();
+        Editor editor = sharedPreferences.edit();
         editor.putInt(resources.getString(keyId), value);
         editor.commit();
     }
 
-    public int load(int keyId) {
-        Resources resources = activity.getResources();
-        return load(resources, keyId, 0);
+    public void save(int keyId, long value) {
+        Editor editor = sharedPreferences.edit();
+        editor.putLong(resources.getString(keyId), value);
+        editor.commit();
     }
 
-    public int load(int keyId, int defaultValueId) {
-        Resources resources = activity.getResources();
-        return load(resources, keyId, resources.getInteger(defaultValueId));
+    public void save(int keyId, boolean value) {
+        Editor editor = sharedPreferences.edit();
+        editor.putBoolean(resources.getString(keyId), value);
+        editor.commit();
     }
 
-    private int load(Resources resources, int keyId, int defaultValue) {
-        SharedPreferences sharedPreferences = getSharedPreferences();
+    public int loadInt(int keyId) {
+        return loadInt(resources, keyId, 0);
+    }
+
+    public long loadLong(int keyId) {
+        return loadLong(resources, keyId, 0);
+    }
+
+    public int loadInt(int keyId, int defaultValueId) {
+        return loadInt(resources, keyId, resources.getInteger(defaultValueId));
+    }
+
+    public boolean loadBoolean(int keyId) {
+        return sharedPreferences.getBoolean(resources.getString(keyId), false);
+    }
+
+    private int loadInt(Resources resources, int keyId, int defaultValue) {
         return sharedPreferences.getInt(resources.getString(keyId), defaultValue);
     }
 
-    private Editor getEditor() {
-        return getSharedPreferences().edit();
-    }
-
-    private SharedPreferences getSharedPreferences() {
-        return activity.getPreferences(Context.MODE_PRIVATE);
+    private long loadLong(Resources resources, int keyId, long defaultValue) {
+        return sharedPreferences.getLong(resources.getString(keyId), defaultValue);
     }
 
 }

@@ -33,6 +33,5 @@ public class SetsPopup extends Popup {
         String setsText = setsView.getText().toString();
         int sets = Integer.parseInt(setsText.length() == 0 ? "0" : setsText);
         countdown.setSets(sets);
-        callback.onOK();
     }
 }

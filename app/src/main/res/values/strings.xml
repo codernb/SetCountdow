@@ -22,6 +22,10 @@
     <string name="minus">-</string>
     <string name="drink_button_description">Drink is ready</string>
     <string name="volume_save_key">volume</string>
-    <string name="drink_delay_save_key">drinkDelay</string>
+    <string name="drink_delay_save_key">drinkDelayTime</string>
     <string name="set_drink_delay_hint">Drink Delay</string>
+    <string name="drink_delay_start_time_save_key">drinkDelayStart</string>
+    <string name="countdown_start_time_save_key">countdownStart</string>
+    <string name="countdown_running_save_key">countdownRunning</string>
+    <string name="drink_delay_running_save_key">drinkDelayRunning</string>
 </resources>

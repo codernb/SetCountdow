@@ -1,6 +1,8 @@
 package com.codernb.setcountdown.popups;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
@@ -23,13 +25,11 @@ public class ClockPopup extends Popup {
     protected View initializeView() {
         View view = getView(R.layout.clock_popup);
         String countdownTime = String.format("%d", countdown.getCountdownTime());
-        String thresholdTime = String.format("%d", countdown.getThreshold());
+        String thresholdTime = String.format("%d", countdown.getThresholdTime());
         countdownTimeView = (EditText) view.findViewById(R.id.set_countdown_time);
         thresholdTimeView = (EditText) view.findViewById(R.id.set_threshold_time);
         countdownTimeView.setText(countdownTime);
         thresholdTimeView.setText(thresholdTime);
-        countdownTimeView.setSelection(countdownTime.length());
-        thresholdTimeView.setSelection(thresholdTime.length());
         return view;
     }
 
@@ -40,8 +40,7 @@ public class ClockPopup extends Popup {
         int countdownTime = Integer.parseInt(countdownText.length() == 0 ? "0" : countdownText);
         int thresholdTime = Integer.parseInt(thresholdText.length() == 0 ? "0" : thresholdText);
         countdown.setCountdownTime(countdownTime);
-        countdown.setThreshold(thresholdTime);
-        callback.onOK();
+        countdown.setThresholdTime(thresholdTime);
     }
 
 }

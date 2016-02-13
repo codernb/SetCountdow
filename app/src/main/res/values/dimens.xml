@@ -19,7 +19,7 @@
     <integer name="threshold_time_default">10</integer>
     <integer name="volume_steps">5</integer>
     <integer name="volume_default">80</integer>
-    <integer name="drink_delay_default">1</integer>
+    <integer name="drink_delay_default">1800</integer>
     <array name="threshold_reached_vibration_pattern">
         <item>0</item>
         <item>500</item>
