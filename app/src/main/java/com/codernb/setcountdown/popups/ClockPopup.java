@@ -1,8 +1,6 @@
 package com.codernb.setcountdown.popups;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
