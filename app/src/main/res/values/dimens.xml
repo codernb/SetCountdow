@@ -9,6 +9,7 @@
     <dimen name="clock_set_size">18sp</dimen>
     <dimen name="popup_padding">10dp</dimen>
     <dimen name="drink_button_size">50dp</dimen>
+    <dimen name="repeat_image_size">20dp</dimen>
     <integer name="max_popup_input_length">6</integer>
     <integer name="countdown_end_tone_duration">500</integer>
     <integer name="countdown_end_vibration_duration">1000</integer>

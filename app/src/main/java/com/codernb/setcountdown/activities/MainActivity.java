@@ -10,15 +10,17 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codernb.setcountdown.R;
-import com.codernb.setcountdown.popups.ClockPopup;
 import com.codernb.setcountdown.popups.DrinkPopup;
 import com.codernb.setcountdown.popups.Popup.Callback;
+import com.codernb.setcountdown.popups.RoundsPopup;
 import com.codernb.setcountdown.popups.SetsPopup;
-import com.codernb.setcountdown.utils.Countdown;
 import com.codernb.setcountdown.utils.Preferences;
+import com.codernb.setcountdown.utils.countdowns.DrinkCountdown;
+import com.codernb.setcountdown.utils.countdowns.RoundCountdown;
 import com.codernb.setcountdown.utils.signalers.Signaller;
 
 /**
@@ -31,9 +33,10 @@ public class MainActivity extends ActionBarActivity {
 
     private boolean thresholdReached;
 
-    private Countdown countdown;
+    private RoundCountdown roundCountdown;
+    private DrinkCountdown drinkCountdown;
     private Resources resources;
-    private ClockPopup clockPopup;
+    private RoundsPopup roundsPopup;
     private SetsPopup setsPopup;
     private DrinkPopup drinkPopup;
     private Signaller signaller;
@@ -42,6 +45,7 @@ public class MainActivity extends ActionBarActivity {
     private TextView setsView;
     private TextView volumeView;
     private TextView drinkDelayView;
+    private ImageView roundsCountdownRepeatView;
     private Button startButton;
     private Button resetButton;
     private Button volumeUpButton;
@@ -65,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
     private final OnClickListener startListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            startCountdown();
+            startRoundCountdown();
             refreshViews();
         }
     };
@@ -73,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
     private final OnClickListener stopListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            stopCountdown();
+            stopRoundCountdown();
             refreshViews();
         }
     };
@@ -112,7 +116,7 @@ public class MainActivity extends ActionBarActivity {
     private final OnLongClickListener timeSetListener = new OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
-            clockPopup.show();
+            roundsPopup.show();
             return true;
         }
     };
@@ -154,8 +158,9 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         resources = getResources();
         Preferences preferences = new Preferences(resources, getPreferences(MODE_PRIVATE));
-        countdown = new Countdown(preferences);
-        clockPopup = getClockCallback();
+        roundCountdown = new RoundCountdown(preferences);
+        drinkCountdown = new DrinkCountdown(preferences);
+        roundsPopup = getClockCallback();
         setsPopup = getSetsCallback();
         drinkPopup = getDrinkCallback();
         signaller = new Signaller(this, preferences);
@@ -179,7 +184,7 @@ public class MainActivity extends ActionBarActivity {
         super.onDestroy();
         stopHandler();
         stopDrinkDelayHandler();
-        clockPopup.dismiss();
+        roundsPopup.dismiss();
         setsPopup.dismiss();
         drinkPopup.dismiss();
     }
@@ -194,6 +199,7 @@ public class MainActivity extends ActionBarActivity {
         volumeView = (TextView) findViewById(R.id.volume_view);
         drinkButton = (ImageButton) findViewById(R.id.drink_button);
         drinkDelayView = (TextView) findViewById(R.id.drink_countdown);
+        roundsCountdownRepeatView = (ImageView) findViewById(R.id.rounds_countdown_repeat_view);
     }
 
     private void initializeButtons() {
@@ -213,7 +219,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void initializeThresholdReached() {
-        if (countdown.isInThreshold()) {
+        if (roundCountdown.isWarning()) {
             thresholdReached = true;
             setBackgroundColor(Color.RED);
         } else {
@@ -222,14 +228,14 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void initializeDrinkButton() {
-        if (countdown.isDrinkDelayRunning()) {
+        if (drinkCountdown.isRunning()) {
             drinkButton.setVisibility(View.INVISIBLE);
             runDrinkCountdown(drinkRunnable);
         }
     }
 
     private void startHandler() {
-        if (countdown.isCountdownRunning())
+        if (roundCountdown.isRunning())
             HANDLER.postDelayed(countdownRunnable, 0);
     }
 
@@ -238,7 +244,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void startDrinkDelayHandler() {
-        if (countdown.isDrinkDelayRunning())
+        if (drinkCountdown.isRunning())
             HANDLER.postDelayed(drinkRunnable, 0);
     }
 
@@ -246,27 +252,27 @@ public class MainActivity extends ActionBarActivity {
         HANDLER.removeCallbacks(drinkRunnable);
     }
 
-    private void startCountdown() {
+    private void startRoundCountdown() {
         thresholdReached = false;
-        countdown.startCountdown();
+        roundCountdown.start();
         updateStartButtonListener();
         startHandler();
     }
 
-    private void stopCountdown() {
+    private void stopRoundCountdown() {
         stopHandler();
-        countdown.stopCountdown();
+        roundCountdown.stop();
         updateStartButtonListener();
     }
 
     private void startDrinkCountdown() {
-        countdown.startDrinkDelay();
+        drinkCountdown.start();
         HANDLER.postDelayed(drinkRunnable, clockRefreshDelay);
     }
 
     private void stopDrinkDelayCountdown() {
         stopDrinkDelayHandler();
-        countdown.stopDrinkDelay();
+        drinkCountdown.stop();
         refreshDrinkDelay();
     }
 
@@ -275,12 +281,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void resetCountdown() {
-        stopCountdown();
-        countdown.reset();
+        stopRoundCountdown();
+        roundCountdown.reset();
     }
 
     private void updateStartButtonListener() {
-        if (countdown.isCountdownRunning())
+        if (roundCountdown.isRunning())
 
             startButton.setOnClickListener(stopListener);
         else
@@ -288,26 +294,30 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void refreshViews() {
-        refreshClockView();
+        refreshRoundCountdownView();
         refreshStartButtonText();
         refreshSetsOn();
         refreshVolumeView();
         refreshDrinkDelay();
     }
 
-    private void refreshClockView() {
-        int time = countdown.getRemainingCountdownTime();
+    private void refreshRoundCountdownView() {
+        int time = roundCountdown.getRemainingTime();
         timeView.setText(String.format("%ds", time));
+        if (roundCountdown.isRepeating())
+            roundsCountdownRepeatView.setVisibility(View.VISIBLE);
+        else
+            roundsCountdownRepeatView.setVisibility(View.GONE);
     }
 
     private void refreshStartButtonText() {
-        int startButtonText = countdown.isCountdownRunning() ?
+        int startButtonText = roundCountdown.isRunning() ?
                 R.string.stop_countdown : R.string.start_countdown;
         startButton.setText(startButtonText);
     }
 
     private void refreshSetsOn() {
-        int sets = countdown.getSets();
+        int sets = roundCountdown.getSets();
         setsView.setText(String.format("%d %s", sets, sets == 1 ?
                 resources.getString(R.string.set_singular) :
                 resources.getString(R.string.set_plural)));
@@ -318,34 +328,36 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void refreshDrinkDelay() {
-        if (countdown.isDrinkDelayRunning()) {
+        if (drinkCountdown.isRunning()) {
             drinkDelayView.setVisibility(View.VISIBLE);
             drinkButton.setVisibility(View.INVISIBLE);
-            drinkDelayView.setText(String.format("%s", countdown.getDrinkDelayText(resources)));
+            drinkDelayView.setText(String.format("%s", drinkCountdown.getTimeText(resources)));
         } else {
             drinkDelayView.setVisibility(View.INVISIBLE);
             drinkButton.setVisibility(View.VISIBLE);
         }
     }
 
-    private ClockPopup getClockCallback() {
-        return new ClockPopup(this, countdown, popupCallback);
+    private RoundsPopup getClockCallback() {
+        return new RoundsPopup(this, roundCountdown, popupCallback);
     }
 
     private SetsPopup getSetsCallback() {
-        return new SetsPopup(this, countdown, popupCallback);
+        return new SetsPopup(this, roundCountdown, popupCallback);
     }
 
     private DrinkPopup getDrinkCallback() {
-        return new DrinkPopup(this, countdown, popupCallback);
+        return new DrinkPopup(this, drinkCountdown, popupCallback);
     }
 
     private void runCountdown(Runnable runnable) {
-        if (!countdown.isCountdownRunning()) {
-            stopCountdown();
+        if (!roundCountdown.isRunning()) {
+            stopRoundCountdown();
             signaller.signalCountdownEnd();
+            if (roundCountdown.isRepeating())
+                startRoundCountdown();
         } else {
-            if (!thresholdReached && countdown.isInThreshold()) {
+            if (!thresholdReached && roundCountdown.isWarning()) {
                 signaller.signalThresholdReached();
                 thresholdReached = true;
             }
@@ -355,7 +367,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void runDrinkCountdown(Runnable runnable) {
-        if (!countdown.isDrinkDelayRunning())
+        if (!drinkCountdown.isRunning())
             stopDrinkDelayCountdown();
         else
             HANDLER.postDelayed(runnable, clockRefreshDelay);

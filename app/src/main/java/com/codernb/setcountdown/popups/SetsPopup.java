@@ -5,23 +5,26 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.codernb.setcountdown.R;
-import com.codernb.setcountdown.utils.Countdown;
+import com.codernb.setcountdown.utils.countdowns.RoundCountdown;
 
 /**
  * Created by cyril on 07.02.16.
  */
 public class SetsPopup extends Popup {
 
+    private final RoundCountdown roundCountdown;
+
     private EditText setsView;
 
-    public SetsPopup(Context context, Countdown countdown, Callback callback) {
-        super(context, countdown, callback);
+    public SetsPopup(Context context, RoundCountdown roundCountdown, Callback callback) {
+        super(context, callback);
+        this.roundCountdown = roundCountdown;
     }
 
     @Override
     protected View initializeView() {
         View view = getView(R.layout.sets_popup);
-        String sets = String.format("%d", countdown.getSets());
+        String sets = String.format("%d", roundCountdown.getSets());
         setsView = (EditText) view.findViewById(R.id.set_sets);
         setsView.setText(sets);
         setsView.setSelection(sets.length());
@@ -32,6 +35,6 @@ public class SetsPopup extends Popup {
     protected void OKClicked() {
         String setsText = setsView.getText().toString();
         int sets = Integer.parseInt(setsText.length() == 0 ? "0" : setsText);
-        countdown.setSets(sets);
+        roundCountdown.setSets(sets);
     }
 }

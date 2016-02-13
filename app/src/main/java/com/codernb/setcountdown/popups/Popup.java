@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.WindowManager.LayoutParams;
 
 import com.codernb.setcountdown.R;
-import com.codernb.setcountdown.utils.Countdown;
+import com.codernb.setcountdown.utils.countdowns.RoundCountdown;
 
 /**
  * Created by cyril on 07.02.16.
@@ -19,12 +19,11 @@ public abstract class Popup {
 
     protected final Context context;
     protected final AlertDialog.Builder builder;
-    protected final Countdown countdown;
+
     protected AlertDialog alertDialog;
 
-    public Popup(Context context, Countdown countdown, final Callback callback) {
+    public Popup(Context context, final Callback callback) {
         this.context = context;
-        this.countdown = countdown;
         builder = new Builder(context);
         builder.setCancelable(false)
                 .setPositiveButton(R.string.set_time_ok, new DialogInterface.OnClickListener() {
@@ -52,8 +51,7 @@ public abstract class Popup {
     }
 
     public void show() {
-        View view = initializeView();
-        alertDialog = builder.setView(view).show();
+        alertDialog = builder.setView(initializeView()).show();
         alertDialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
     }
 
